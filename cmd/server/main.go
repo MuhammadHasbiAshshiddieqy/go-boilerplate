@@ -9,10 +9,15 @@ import (
 	"github.com/joho/godotenv"
 
 	_config "microservice/shared/config"
-	// _mysql "microservice/shared/pkg/database/mysql"
+	_mysql "microservice/shared/pkg/database/mysql"
 
+	// HEALTH
 	_healthHttpDelivery "microservice/health/delivery/http"
-	_healthUsecase "microservice/health/usecase"
+
+	// USER
+	_userHttpDelivery "microservice/user/delivery/http"
+	_mysqlUserRepository "microservice/user/repository/mysql"
+	_userUsecase "microservice/user/usecase"
 )
 
 func init() {
@@ -25,10 +30,7 @@ func init() {
 func main() {
 	_config.InitConfig(os.Getenv("ENV"))
 
-	// err := _mysql.Init(os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"))
-	// if err != nil {
-	// 	panic(err)
-	// }
+	_mysql.Init(os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"))
 
 	// Start a new fiber app
 	app := fiber.New()
@@ -36,8 +38,12 @@ func main() {
 	app.Use(cors.New()) // For CORS
 
 	// Health Group
-	au := _healthUsecase.NewHealthUsecase()
-	_healthHttpDelivery.NewHealthHandler(app, au)
+	_healthHttpDelivery.NewHealthHandler(app)
+
+	// User Group
+	ur := _mysqlUserRepository.NewMysqlUserRepository(_mysql.DbManager())
+	uu := _userUsecase.NewUserUsecase(ur)
+	_userHttpDelivery.NewUserHandler(app, uu)
 
 	app_port := os.Getenv("PORT")
 	if app_port == "" {
