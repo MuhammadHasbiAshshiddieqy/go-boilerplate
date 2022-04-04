@@ -1,1 +1,1 @@
-src : https://github.com/bxcodec/go-clean-arch
+Golang Boilerplate
