@@ -23,6 +23,7 @@ func NewUserHandler(router fiber.Router, us _domain.UserUsecase) {
 	usrGrp := router.Group("/user")
 	{
 		usrGrp.Post("", timeout.New(handler.Store, 5*time.Second))
+		usrGrp.Get("/:id", timeout.New(handler.GetByID, 5*time.Second))
 	}
 }
 
@@ -33,6 +34,32 @@ func (u *UserHandler) Store(c *fiber.Ctx) error {
 	}
 
 	res, err := u.UUsecase.Store(c, payload)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "failed", "message": err.Error()})
+	}
+
+	c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "success to create user", "data": res})
+	return nil
+}
+
+func (u *UserHandler) GetByID(c *fiber.Ctx) error {
+	id := c.Params("id")
+	res, err := u.UUsecase.GetByID(c, id)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "failed", "message": err.Error()})
+	}
+
+	c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "success to get user", "data": res})
+	return nil
+}
+
+func (u *UserHandler) Update(c *fiber.Ctx) error {
+	payload := _dto.UserRequestUpdate{}
+	if err := c.BodyParser(&payload); err != nil {
+		return err
+	}
+
+	res, err := u.UUsecase.Update(c, payload)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "failed", "message": err.Error()})
 	}

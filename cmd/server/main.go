@@ -23,7 +23,7 @@ import (
 func init() {
 	//To load our environmental variables.
 	if err := godotenv.Load(); err != nil {
-		log.Println("no env gotten")
+		log.Println("no env detected")
 	}
 }
 

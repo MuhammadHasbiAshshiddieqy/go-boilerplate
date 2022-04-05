@@ -32,3 +32,30 @@ func (u *userUsecase) Store(c *fiber.Ctx, ureq _dto.UserRequestCreate) (_dto.Use
 
 	return _mapper.MapUserToUserResponse(res), nil
 }
+
+func (u *userUsecase) GetByID(c *fiber.Ctx, id string) (_dto.UserResponse, error) {
+	res, err := u.userRepo.GetByID(c, id)
+	if err != nil {
+		return _dto.UserResponse{}, err
+	}
+
+	return _mapper.MapUserToUserResponse(res), nil
+}
+
+func (u *userUsecase) Update(c *fiber.Ctx, ureq _dto.UserRequestUpdate) (_dto.UserResponse, error) {
+	us, err := u.userRepo.GetByID(c, ureq.ID)
+	if err != nil {
+		return _dto.UserResponse{}, err
+	}
+	usr, err := _mapper.MapUserRequestUpdateToUser(ureq, us)
+	if err != nil {
+		return _dto.UserResponse{}, err
+	}
+
+	res, err := u.userRepo.Update(c, usr)
+	if err != nil {
+		return _dto.UserResponse{}, err
+	}
+
+	return _mapper.MapUserToUserResponse(res), nil
+}

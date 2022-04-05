@@ -19,16 +19,16 @@ type (
 
 	UserUsecase interface {
 		// 	Fetch(ctx context.Context, cursor string, num int64) ([]User, string, error)
-		// GetByID(ctx context.Context, id string) (User, error)
-		// 	Update(ctx context.Context, u *User) error
+		GetByID(c *fiber.Ctx, id string) (_dto.UserResponse, error)
+		Update(c *fiber.Ctx, u _dto.UserRequestUpdate) (_dto.UserResponse, error)
 		Store(c *fiber.Ctx, u _dto.UserRequestCreate) (_dto.UserResponse, error)
 		// 	Delete(ctx context.Context, id int64) error
 	}
 
 	UserRepository interface {
 		// 	Fetch(ctx context.Context, cursor string, num int64) ([]User, string, error)
-		// GetByID(ctx context.Context, id string) (User, error)
-		// 	Update(ctx context.Context, u *User) error
+		GetByID(c *fiber.Ctx, id string) (User, error)
+		Update(c *fiber.Ctx, u User) (User, error)
 		Store(c *fiber.Ctx, u User) (User, error)
 		// 	Delete(ctx context.Context, id int64) error
 	}
