@@ -2,6 +2,7 @@ package repository
 
 import (
 	_domain "microservice/shared/domain"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
@@ -39,4 +40,12 @@ func (u *mysqlUserRepository) Update(c *fiber.Ctx, us _domain.User) (_domain.Use
 	}
 
 	return us, nil
+}
+
+func (u *mysqlUserRepository) Delete(c *fiber.Ctx, id string) error {
+	if err := u.Orm.Where("id = ?", id).Update("deleted_at", time.Now()).Error; err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -59,3 +59,12 @@ func (u *userUsecase) Update(c *fiber.Ctx, ureq _dto.UserRequestUpdate) (_dto.Us
 
 	return _mapper.MapUserToUserResponse(res), nil
 }
+
+func (u *userUsecase) Delete(c *fiber.Ctx, id string) error {
+	err := u.userRepo.Delete(c, id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -24,6 +24,8 @@ func NewUserHandler(router fiber.Router, us _domain.UserUsecase) {
 	{
 		usrGrp.Post("", timeout.New(handler.Store, 5*time.Second))
 		usrGrp.Get("/:id", timeout.New(handler.GetByID, 5*time.Second))
+		usrGrp.Put("", timeout.New(handler.Update, 5*time.Second))
+		usrGrp.Delete("/:id", timeout.New(handler.Delete, 5*time.Second))
 	}
 }
 
@@ -64,6 +66,17 @@ func (u *UserHandler) Update(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "failed", "message": err.Error()})
 	}
 
-	c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "success to create user", "data": res})
+	c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "success to update user", "data": res})
+	return nil
+}
+
+func (u *UserHandler) Delete(c *fiber.Ctx) error {
+	id := c.Params("id")
+	err := u.UUsecase.Delete(c, id)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "failed", "message": err.Error()})
+	}
+
+	c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "success to delete user", "user_id": id})
 	return nil
 }

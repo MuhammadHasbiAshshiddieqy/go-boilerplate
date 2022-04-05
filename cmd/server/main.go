@@ -37,13 +37,15 @@ func main() {
 
 	app.Use(cors.New()) // For CORS
 
+	v1Grp := app.Group("/v1")
+
 	// Health Group
-	_healthHttpDelivery.NewHealthHandler(app)
+	_healthHttpDelivery.NewHealthHandler(v1Grp)
 
 	// User Group
 	ur := _mysqlUserRepository.NewMysqlUserRepository(_mysql.DbManager())
 	uu := _userUsecase.NewUserUsecase(ur)
-	_userHttpDelivery.NewUserHandler(app, uu)
+	_userHttpDelivery.NewUserHandler(v1Grp, uu)
 
 	app_port := os.Getenv("PORT")
 	if app_port == "" {

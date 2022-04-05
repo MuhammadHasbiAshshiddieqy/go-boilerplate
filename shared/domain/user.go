@@ -22,7 +22,7 @@ type (
 		GetByID(c *fiber.Ctx, id string) (_dto.UserResponse, error)
 		Update(c *fiber.Ctx, u _dto.UserRequestUpdate) (_dto.UserResponse, error)
 		Store(c *fiber.Ctx, u _dto.UserRequestCreate) (_dto.UserResponse, error)
-		// 	Delete(ctx context.Context, id int64) error
+		Delete(c *fiber.Ctx, id string) error
 	}
 
 	UserRepository interface {
@@ -30,7 +30,7 @@ type (
 		GetByID(c *fiber.Ctx, id string) (User, error)
 		Update(c *fiber.Ctx, u User) (User, error)
 		Store(c *fiber.Ctx, u User) (User, error)
-		// 	Delete(ctx context.Context, id int64) error
+		Delete(c *fiber.Ctx, id string) error
 	}
 )
 
