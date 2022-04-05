@@ -42,6 +42,19 @@ func (u *userUsecase) GetByID(c *fiber.Ctx, id string) (_dto.UserResponse, error
 	return _mapper.MapUserToUserResponse(res), nil
 }
 
+func (u *userUsecase) Fetch(c *fiber.Ctx, pagination _dto.Pagination) (_dto.Pagination, error) {
+	res, err := u.userRepo.Fetch(c, &pagination)
+	if err != nil {
+		return _dto.Pagination{}, err
+	}
+
+	if len(res) != 0 {
+		pagination.Rows = _mapper.MapUsersToUserResponses(res)
+	}
+
+	return pagination, nil
+}
+
 func (u *userUsecase) Update(c *fiber.Ctx, ureq _dto.UserRequestUpdate) (_dto.UserResponse, error) {
 	us, err := u.userRepo.GetByID(c, ureq.ID)
 	if err != nil {

@@ -24,6 +24,7 @@ func NewUserHandler(router fiber.Router, us _domain.UserUsecase) {
 	{
 		usrGrp.Post("", timeout.New(handler.Store, 5*time.Second))
 		usrGrp.Get("/:id", timeout.New(handler.GetByID, 5*time.Second))
+		usrGrp.Get("", timeout.New(handler.Fetch, 5*time.Second))
 		usrGrp.Put("", timeout.New(handler.Update, 5*time.Second))
 		usrGrp.Delete("/:id", timeout.New(handler.Delete, 5*time.Second))
 	}
@@ -52,6 +53,22 @@ func (u *UserHandler) GetByID(c *fiber.Ctx) error {
 	}
 
 	c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "success to get user", "data": res})
+	return nil
+}
+
+func (u *UserHandler) Fetch(c *fiber.Ctx) error {
+	pagination := &_dto.Pagination{}
+
+	if err := c.QueryParser(pagination); err != nil {
+		return err
+	}
+
+	res, err := u.UUsecase.Fetch(c, *pagination)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "failed", "message": err.Error()})
+	}
+
+	c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "success to get users", "data": res})
 	return nil
 }
 

@@ -40,3 +40,12 @@ func MapUserToUserResponse(u _domain.User) _dto.UserResponse {
 		Name: u.Name,
 	}
 }
+
+func MapUsersToUserResponses(u []*_domain.User) []_dto.UserResponse {
+	res := []_dto.UserResponse{}
+	for _, usr := range u {
+		res = append(res, MapUserToUserResponse(*usr))
+	}
+
+	return res
+}

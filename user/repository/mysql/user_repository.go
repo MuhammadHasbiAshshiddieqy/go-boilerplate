@@ -2,6 +2,8 @@ package repository
 
 import (
 	_domain "microservice/shared/domain"
+	_dto "microservice/shared/dto"
+	_helper "microservice/shared/pkg/helper"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -32,6 +34,15 @@ func (u *mysqlUserRepository) GetByID(c *fiber.Ctx, id string) (_domain.User, er
 	}
 
 	return us, nil
+}
+
+func (u *mysqlUserRepository) Fetch(c *fiber.Ctx, pagination *_dto.Pagination) ([]*_domain.User, error) {
+	var usrs []*_domain.User
+	if err := u.Orm.Scopes(_helper.Paginate(usrs, pagination, u.Orm)).Find(&usrs); err != nil {
+		return usrs, nil
+	}
+
+	return usrs, nil
 }
 
 func (u *mysqlUserRepository) Update(c *fiber.Ctx, us _domain.User) (_domain.User, error) {
