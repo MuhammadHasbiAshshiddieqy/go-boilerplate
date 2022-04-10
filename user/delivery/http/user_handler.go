@@ -29,6 +29,7 @@ func NewUserHandler(router fiber.Router, us _domain.UserUsecase) {
 	authGrp := router.Group("/auth")
 	{
 		authGrp.Post("/login", handler.Login)
+		authGrp.Post("/refresh", handler.Refresh)
 	}
 }
 
@@ -111,5 +112,19 @@ func (u *UserHandler) Login(c *fiber.Ctx) error {
 	}
 
 	c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "login success", "data": res})
+	return nil
+}
+
+func (u *UserHandler) Refresh(c *fiber.Ctx) error {
+	payload := _dto.UserRequestRefresh{}
+	if err := c.BodyParser(&payload); err != nil {
+		return err
+	}
+	res, err := u.UUsecase.Refresh(c, payload)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "failed", "message": err.Error()})
+	}
+
+	c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "refresh success", "data": res})
 	return nil
 }

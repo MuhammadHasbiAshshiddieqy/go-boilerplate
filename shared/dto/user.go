@@ -17,7 +17,7 @@ type (
 		Password string `json:"password"`
 	}
 
-	UserResponseLogin struct {
+	UserResponseToken struct {
 		AccessToken  string `json:"access_token"`
 		RefreshToken string `json:"refresh_token"`
 	}
@@ -25,5 +25,9 @@ type (
 	UserRequestLogin struct {
 		Name     string `json:"name"`
 		Password string `json:"password"`
+	}
+
+	UserRequestRefresh struct {
+		RefreshToken string `json:"refresh_token"`
 	}
 )

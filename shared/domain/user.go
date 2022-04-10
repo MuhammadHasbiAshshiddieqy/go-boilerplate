@@ -23,7 +23,8 @@ type (
 		Update(c *fiber.Ctx, u _dto.UserRequestUpdate) (_dto.UserResponse, error)
 		Store(c *fiber.Ctx, u _dto.UserRequestCreate) (_dto.UserResponse, error)
 		Delete(c *fiber.Ctx, id string) error
-		Login(c *fiber.Ctx, u _dto.UserRequestLogin) (_dto.UserResponseLogin, error)
+		Login(c *fiber.Ctx, u _dto.UserRequestLogin) (_dto.UserResponseToken, error)
+		Refresh(c *fiber.Ctx, u _dto.UserRequestRefresh) (_dto.UserResponseToken, error)
 	}
 
 	UserRepository interface {

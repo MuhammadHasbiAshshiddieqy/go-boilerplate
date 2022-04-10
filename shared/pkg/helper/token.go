@@ -13,20 +13,21 @@ import (
 	"github.com/google/uuid"
 )
 
-type AccessDetails struct {
-	AccessUuid string
-	UserId     string
-}
-type TokenDetails struct {
-	AccessToken  string
-	RefreshToken string
-	AccessUuid   string
-	RefreshUuid  string
-	AtExpires    int64
-	RtExpires    int64
-}
+type (
+	AccessDetails struct {
+		AccessUuid string
+		UserId     string
+	}
+	TokenDetails struct {
+		AccessToken  string
+		RefreshToken string
+		AccessUuid   string
+		RefreshUuid  string
+		AtExpires    int64
+		RtExpires    int64
+	}
+)
 
-// CHECKED
 func CreateToken(userid string) (*TokenDetails, error) {
 	var err error
 	td := &TokenDetails{}
@@ -84,7 +85,6 @@ func CreateAuth(userid string, td *TokenDetails) error {
 	return nil
 }
 
-// CHECKED
 //get the token from the request body
 func ExtractToken(c *fiber.Ctx) string {
 	bearToken := c.Get("Authorization")
@@ -95,7 +95,6 @@ func ExtractToken(c *fiber.Ctx) string {
 	return ""
 }
 
-// CHECKED
 func VerifyToken(c *fiber.Ctx) (*jwt.Token, error) {
 	tokenString := ExtractToken(c)
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
@@ -111,7 +110,6 @@ func VerifyToken(c *fiber.Ctx) (*jwt.Token, error) {
 	return token, nil
 }
 
-// CHECKED
 func TokenValid(c *fiber.Ctx) error {
 	token, err := VerifyToken(c)
 	if err != nil {
@@ -123,7 +121,6 @@ func TokenValid(c *fiber.Ctx) error {
 	return nil
 }
 
-// CHECKED
 func ExtractTokenMetadata(c *fiber.Ctx) (*AccessDetails, error) {
 	token, err := VerifyToken(c)
 	if err != nil {
@@ -147,7 +144,6 @@ func ExtractTokenMetadata(c *fiber.Ctx) (*AccessDetails, error) {
 	return nil, err
 }
 
-// CHECKED
 func FetchAuth(authD *AccessDetails) (string, error) {
 	client := _redis.RedisManager()
 	userid, err := client.Get(client.Context(), authD.AccessUuid).Result()
@@ -161,7 +157,6 @@ func FetchAuth(authD *AccessDetails) (string, error) {
 	return userid, nil
 }
 
-// CHECKED
 func DeleteAuth(givenUuid string) (int64, error) {
 	client := _redis.RedisManager()
 	deleted, err := client.Del(client.Context(), givenUuid).Result()
@@ -171,7 +166,6 @@ func DeleteAuth(givenUuid string) (int64, error) {
 	return deleted, nil
 }
 
-// CHECKED
 func DeleteTokens(authD *AccessDetails) error {
 	client := _redis.RedisManager()
 	//get the refresh uuid
