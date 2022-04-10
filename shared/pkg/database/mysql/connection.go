@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"errors"
 	"fmt"
 
 	"gorm.io/driver/mysql"
@@ -14,7 +15,7 @@ var db *gorm.DB
 var err error
 
 // Init - mysql init
-func Init(DbUser, DbPassword string) {
+func Init(DbUser, DbPassword string) error {
 	conf := _config.GetConfig()
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		DbUser,
@@ -28,12 +29,14 @@ func Init(DbUser, DbPassword string) {
 	}), &gorm.Config{})
 
 	if err != nil {
-		panic("DB Connection Error")
+		return errors.New("MySQL Connection Error")
 	}
 	db.AutoMigrate(&_domain.User{})
+
+	return nil
 }
 
 // DbManager - return db connection
-func DbManager() *gorm.DB {
+func MySQLManager() *gorm.DB {
 	return db
 }

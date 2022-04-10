@@ -1,21 +1,27 @@
-package auth
+package helper
 
-// import (
-// 	"fmt"
-// 	"os"
-// 	"strings"
-// 	"time"
+import (
+	"fmt"
+	"os"
 
-// 	"github.com/dgrijalva/jwt-go"
-// 	"github.com/gofiber/fiber/v2"
-// 	"github.com/google/uuid"
-// )
+	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt"
+)
 
 // type Token struct{}
 
 // func NewToken() *Token {
 // 	return &Token{}
 // }
+
+type TokenDetails struct {
+	AccessToken  string
+	RefreshToken string
+	AccessUuid   string
+	RefreshUuid  string
+	AtExpires    int64
+	RtExpires    int64
+}
 
 // type TokenInterface interface {
 // 	CreateToken(userid string) (*TokenDetails, error)
@@ -58,31 +64,33 @@ package auth
 // 	return td, nil
 // }
 
-// func TokenValid(c *fiber.Ctx) error {
-// 	token, err := VerifyToken(c)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	if _, ok := token.Claims.(jwt.Claims); !ok && !token.Valid {
-// 		return err
-// 	}
-// 	return nil
-// }
+// // CHECKED
+func VerifyToken(c *fiber.Ctx) (*jwt.Token, error) {
+	tokenString := ExtractToken(c)
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		//Make sure that the token method conform to "SigningMethodHMAC"
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(os.Getenv("ACCESS_SECRET")), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return token, nil
+}
 
-// func VerifyToken(c *fiber.Ctx) (*jwt.Token, error) {
-// 	tokenString := ExtractToken(c)
-// 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-// 		//Make sure that the token method conform to "SigningMethodHMAC"
-// 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-// 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-// 		}
-// 		return []byte(os.Getenv("ACCESS_SECRET")), nil
-// 	})
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return token, nil
-// }
+// // CHECKED
+func TokenValid(c *fiber.Ctx) error {
+	token, err := VerifyToken(c)
+	if err != nil {
+		return err
+	}
+	if _, ok := token.Claims.(jwt.Claims); !ok && !token.Valid {
+		return err
+	}
+	return nil
+}
 
 // //get the token from the request body
 // func ExtractToken(c *fiber.Ctx) string {

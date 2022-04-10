@@ -1,32 +1,30 @@
 package http
 
 import (
-	"time"
-
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/timeout"
 
 	_domain "microservice/shared/domain"
 	_dto "microservice/shared/dto"
 )
 
-// HealthHandler represent the httphandler for server health
+// UserHandler represent the httphandler for server health
 type UserHandler struct {
 	UUsecase _domain.UserUsecase
 }
 
-// NewHealthHandler will initialize the health/ resources endpoint
+// hltGrp.Get("", timeout.New(handler.Check, 5*time.Second)) // DON'T USE TIMEOUT (RACE CONDITION)
+// NewUserHandler will initialize the user/ resources endpoint
 func NewUserHandler(router fiber.Router, us _domain.UserUsecase) {
 	handler := &UserHandler{
 		UUsecase: us,
 	}
 	usrGrp := router.Group("/user")
 	{
-		usrGrp.Post("", timeout.New(handler.Store, 5*time.Second))
-		usrGrp.Get("/:id", timeout.New(handler.GetByID, 5*time.Second))
-		usrGrp.Get("", timeout.New(handler.Fetch, 5*time.Second))
-		usrGrp.Put("", timeout.New(handler.Update, 5*time.Second))
-		usrGrp.Delete("/:id", timeout.New(handler.Delete, 5*time.Second))
+		usrGrp.Post("", handler.Store)
+		usrGrp.Get("/:id", handler.GetByID)
+		usrGrp.Get("", handler.Fetch)
+		usrGrp.Put("", handler.Update)
+		usrGrp.Delete("/:id", handler.Delete)
 	}
 }
 

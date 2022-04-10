@@ -1,7 +1,7 @@
 package config
 
 import (
-	"log"
+	"errors"
 
 	"github.com/spf13/viper"
 )
@@ -24,7 +24,7 @@ type Config struct {
 
 var config Config
 
-func InitConfig(configName string) {
+func InitConfig(configName string) error {
 	viper.AddConfigPath("./shared/config/secret/")
 	viper.SetConfigName(configName)
 	viper.SetConfigType("json")
@@ -33,16 +33,18 @@ func InitConfig(configName string) {
 	if err := viper.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
 			// Config file not found; ignore error if desired
-			log.Fatalf("Error loading .json file (not found)")
+			return errors.New("Error loading .json file (not found)")
 		} else {
 			// Config file was found but another error was produced
-			log.Fatalf("Error loading .json file (found but error)")
+			return errors.New("Error loading .json file (found but error)")
 		}
 	}
 
 	if err := viper.Unmarshal(&config); err != nil {
-		log.Fatalf("Error unmarshal .json file")
+		return errors.New("Error unmarshal .json file")
 	}
+
+	return nil
 }
 
 func GetConfig() Config {
