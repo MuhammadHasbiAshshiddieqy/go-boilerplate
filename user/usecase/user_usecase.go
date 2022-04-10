@@ -5,6 +5,7 @@ import (
 
 	_domain "microservice/shared/domain"
 	_dto "microservice/shared/dto"
+	_helper "microservice/shared/pkg/helper"
 	_mapper "microservice/shared/pkg/mapper"
 )
 
@@ -80,4 +81,32 @@ func (u *userUsecase) Delete(c *fiber.Ctx, id string) error {
 	}
 
 	return nil
+}
+
+func (u *userUsecase) Login(c *fiber.Ctx, ureq _dto.UserRequestLogin) (_dto.UserResponseLogin, error) {
+	us, err := u.userRepo.GetByCondition(c, _domain.User{
+		Name: ureq.Name,
+	})
+	if err != nil {
+		return _dto.UserResponseLogin{}, _domain.ErrUnauthorized
+	}
+	ok := _helper.CheckPasswordHash(ureq.Password, us.Password)
+	if !ok {
+		return _dto.UserResponseLogin{}, _domain.ErrUnauthorized
+	}
+
+	ts, err := _helper.CreateToken(us.ID)
+	if err != nil {
+		return _dto.UserResponseLogin{}, _domain.ErrUnauthorized
+	}
+
+	saveErr := _helper.CreateAuth(us.ID, ts)
+	if saveErr != nil {
+		return _dto.UserResponseLogin{}, _domain.ErrUnauthorized
+	}
+
+	return _dto.UserResponseLogin{
+		AccessToken:  ts.AccessToken,
+		RefreshToken: ts.RefreshToken,
+	}, nil
 }

@@ -26,6 +26,10 @@ func NewUserHandler(router fiber.Router, us _domain.UserUsecase) {
 		usrGrp.Put("", handler.Update)
 		usrGrp.Delete("/:id", handler.Delete)
 	}
+	authGrp := router.Group("/auth")
+	{
+		authGrp.Post("/login", handler.Login)
+	}
 }
 
 func (u *UserHandler) Store(c *fiber.Ctx) error {
@@ -93,5 +97,19 @@ func (u *UserHandler) Delete(c *fiber.Ctx) error {
 	}
 
 	c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "success to delete user", "user_id": id})
+	return nil
+}
+
+func (u *UserHandler) Login(c *fiber.Ctx) error {
+	payload := _dto.UserRequestLogin{}
+	if err := c.BodyParser(&payload); err != nil {
+		return err
+	}
+	res, err := u.UUsecase.Login(c, payload)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"status": "failed", "message": err.Error()})
+	}
+
+	c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "login success", "data": res})
 	return nil
 }

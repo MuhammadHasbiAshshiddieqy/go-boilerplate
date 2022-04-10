@@ -38,6 +38,15 @@ func (u *mysqlUserRepository) GetByID(c *fiber.Ctx, id string) (_domain.User, er
 	return us, nil
 }
 
+func (u *mysqlUserRepository) GetByCondition(c *fiber.Ctx, us _domain.User) (_domain.User, error) {
+	usr := _domain.User{}
+	if err := u.Orm.Where(&us).First(&usr).Error; err != nil {
+		return usr, err
+	}
+
+	return usr, nil
+}
+
 func (u *mysqlUserRepository) Fetch(c *fiber.Ctx, pagination *_dto.Pagination) ([]*_domain.User, error) {
 	var usrs []*_domain.User
 	if err := u.Orm.Scopes(_helper.Paginate(usrs, pagination, u.Orm)).Find(&usrs); err != nil {
