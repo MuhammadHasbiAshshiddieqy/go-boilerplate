@@ -5,6 +5,7 @@ import (
 
 	_domain "microservice/shared/domain"
 	_dto "microservice/shared/dto"
+	_helper "microservice/shared/pkg/helper"
 )
 
 // UserHandler represent the httphandler for server health
@@ -30,6 +31,7 @@ func NewUserHandler(router fiber.Router, us _domain.UserUsecase) {
 	{
 		authGrp.Post("/login", handler.Login)
 		authGrp.Post("/refresh", handler.Refresh)
+		authGrp.Post("/logout", handler.Logout)
 	}
 }
 
@@ -126,5 +128,19 @@ func (u *UserHandler) Refresh(c *fiber.Ctx) error {
 	}
 
 	c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "refresh success", "data": res})
+	return nil
+}
+
+func (u *UserHandler) Logout(c *fiber.Ctx) error {
+	metadata, err := _helper.ExtractTokenMetadata(c)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "failed", "message": err.Error()})
+	}
+	err = u.UUsecase.Logout(c, metadata)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "failed", "message": err.Error()})
+	}
+
+	c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "logout success"})
 	return nil
 }

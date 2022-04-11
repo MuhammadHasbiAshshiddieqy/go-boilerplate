@@ -171,3 +171,11 @@ func (u *userUsecase) Refresh(c *fiber.Ctx, ureq _dto.UserRequestRefresh) (_dto.
 		return _dto.UserResponseToken{}, errors.New("refresh token expired")
 	}
 }
+
+func (u *userUsecase) Logout(c *fiber.Ctx, metadata *_dto.AccessDetails) error {
+	delErr := _helper.DeleteTokens(metadata)
+	if delErr != nil {
+		return errors.New("failed to delete token")
+	}
+	return nil
+}

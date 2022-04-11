@@ -3,6 +3,7 @@ package helper
 import (
 	"errors"
 	"fmt"
+	_dto "microservice/shared/dto"
 	_redis "microservice/shared/pkg/database/redis"
 	"os"
 	"strings"
@@ -13,24 +14,9 @@ import (
 	"github.com/google/uuid"
 )
 
-type (
-	AccessDetails struct {
-		AccessUuid string
-		UserId     string
-	}
-	TokenDetails struct {
-		AccessToken  string
-		RefreshToken string
-		AccessUuid   string
-		RefreshUuid  string
-		AtExpires    int64
-		RtExpires    int64
-	}
-)
-
-func CreateToken(userid string) (*TokenDetails, error) {
+func CreateToken(userid string) (*_dto.TokenDetails, error) {
 	var err error
-	td := &TokenDetails{}
+	td := &_dto.TokenDetails{}
 	td.AtExpires = time.Now().Add(time.Minute * 15).Unix()
 	accUUID, err := uuid.NewRandom()
 	if err != nil {
@@ -67,7 +53,7 @@ func CreateToken(userid string) (*TokenDetails, error) {
 	return td, nil
 }
 
-func CreateAuth(userid string, td *TokenDetails) error {
+func CreateAuth(userid string, td *_dto.TokenDetails) error {
 	client := _redis.RedisManager()
 	at := time.Unix(td.AtExpires, 0) //converting Unix to UTC(to Time object)
 	rt := time.Unix(td.RtExpires, 0)
@@ -121,7 +107,7 @@ func TokenValid(c *fiber.Ctx) error {
 	return nil
 }
 
-func ExtractTokenMetadata(c *fiber.Ctx) (*AccessDetails, error) {
+func ExtractTokenMetadata(c *fiber.Ctx) (*_dto.AccessDetails, error) {
 	token, err := VerifyToken(c)
 	if err != nil {
 		return nil, err
@@ -136,7 +122,7 @@ func ExtractTokenMetadata(c *fiber.Ctx) (*AccessDetails, error) {
 		if !ok {
 			return nil, err
 		}
-		return &AccessDetails{
+		return &_dto.AccessDetails{
 			AccessUuid: accessUuid,
 			UserId:     userId,
 		}, nil
@@ -144,7 +130,7 @@ func ExtractTokenMetadata(c *fiber.Ctx) (*AccessDetails, error) {
 	return nil, err
 }
 
-func FetchAuth(authD *AccessDetails) (string, error) {
+func FetchAuth(authD *_dto.AccessDetails) (string, error) {
 	client := _redis.RedisManager()
 	userid, err := client.Get(client.Context(), authD.AccessUuid).Result()
 	if err != nil {
@@ -166,7 +152,7 @@ func DeleteAuth(givenUuid string) (int64, error) {
 	return deleted, nil
 }
 
-func DeleteTokens(authD *AccessDetails) error {
+func DeleteTokens(authD *_dto.AccessDetails) error {
 	client := _redis.RedisManager()
 	//get the refresh uuid
 	refreshUuid := fmt.Sprintf("%s++%s", authD.AccessUuid, authD.UserId)

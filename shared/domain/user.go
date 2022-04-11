@@ -25,6 +25,7 @@ type (
 		Delete(c *fiber.Ctx, id string) error
 		Login(c *fiber.Ctx, u _dto.UserRequestLogin) (_dto.UserResponseToken, error)
 		Refresh(c *fiber.Ctx, u _dto.UserRequestRefresh) (_dto.UserResponseToken, error)
+		Logout(c *fiber.Ctx, metadata *_dto.AccessDetails) error
 	}
 
 	UserRepository interface {
