@@ -23,13 +23,15 @@ func MapUserRequestUpdateToUser(u _dto.UserRequestUpdate, us _domain.User) (_dom
 		us.Name = u.Name
 	}
 
-	if u.Password != "" {
-		pwd, err := _helper.HashPassword(u.Password)
-		if err != nil {
-			return _domain.User{}, err
-		}
-		us.Password = pwd
+	return us, nil
+}
+
+func MapUserRequestPasswordUpdateToUser(u _dto.UserRequestPasswordUpdate, us _domain.User) (_domain.User, error) {
+	pwd, err := _helper.HashPassword(u.NewPassword)
+	if err != nil {
+		return _domain.User{}, err
 	}
+	us.Password = pwd
 
 	return us, nil
 }

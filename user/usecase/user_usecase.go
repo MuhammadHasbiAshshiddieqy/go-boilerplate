@@ -179,3 +179,27 @@ func (u *userUsecase) Logout(c *fiber.Ctx, metadata *_dto.AccessDetails) error {
 	}
 	return nil
 }
+
+func (u *userUsecase) ResetPassword(c *fiber.Ctx, metadata *_dto.AccessDetails, ureq _dto.UserRequestPasswordUpdate) error {
+	us, err := u.userRepo.GetByID(c, metadata.UserId)
+	if err != nil {
+		return err
+	}
+
+	ok := _helper.CheckPasswordHash(ureq.Password, us.Password)
+	if !ok {
+		return _domain.ErrUnauthorized
+	}
+
+	usr, err := _mapper.MapUserRequestPasswordUpdateToUser(ureq, us)
+	if err != nil {
+		return err
+	}
+
+	_, err = u.userRepo.Update(c, usr)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

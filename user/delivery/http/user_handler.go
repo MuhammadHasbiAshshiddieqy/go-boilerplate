@@ -32,6 +32,7 @@ func NewUserHandler(router fiber.Router, us _domain.UserUsecase) {
 		authGrp.Post("/login", handler.Login)
 		authGrp.Post("/refresh", handler.Refresh)
 		authGrp.Post("/logout", handler.Logout)
+		authGrp.Post("/reset_password", handler.ResetPassword)
 	}
 }
 
@@ -142,5 +143,25 @@ func (u *UserHandler) Logout(c *fiber.Ctx) error {
 	}
 
 	c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "logout success"})
+	return nil
+}
+
+func (u *UserHandler) ResetPassword(c *fiber.Ctx) error {
+	payload := _dto.UserRequestPasswordUpdate{}
+	if err := c.BodyParser(&payload); err != nil {
+		return err
+	}
+
+	metadata, err := _helper.ExtractTokenMetadata(c)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "failed", "message": err.Error()})
+	}
+
+	err = u.UUsecase.ResetPassword(c, metadata, payload)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "failed", "message": err.Error()})
+	}
+
+	c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "success to reset password"})
 	return nil
 }

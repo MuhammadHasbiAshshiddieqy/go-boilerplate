@@ -20,12 +20,13 @@ type (
 	UserUsecase interface {
 		Fetch(c *fiber.Ctx, pagination _dto.Pagination) (_dto.Pagination, error)
 		GetByID(c *fiber.Ctx, id string) (_dto.UserResponse, error)
-		Update(c *fiber.Ctx, u _dto.UserRequestUpdate) (_dto.UserResponse, error)
-		Store(c *fiber.Ctx, u _dto.UserRequestCreate) (_dto.UserResponse, error)
+		Update(c *fiber.Ctx, ureq _dto.UserRequestUpdate) (_dto.UserResponse, error)
+		Store(c *fiber.Ctx, ureq _dto.UserRequestCreate) (_dto.UserResponse, error)
 		Delete(c *fiber.Ctx, id string) error
-		Login(c *fiber.Ctx, u _dto.UserRequestLogin) (_dto.UserResponseToken, error)
-		Refresh(c *fiber.Ctx, u _dto.UserRequestRefresh) (_dto.UserResponseToken, error)
+		Login(c *fiber.Ctx, ureq _dto.UserRequestLogin) (_dto.UserResponseToken, error)
+		Refresh(c *fiber.Ctx, ureq _dto.UserRequestRefresh) (_dto.UserResponseToken, error)
 		Logout(c *fiber.Ctx, metadata *_dto.AccessDetails) error
+		ResetPassword(c *fiber.Ctx, metadata *_dto.AccessDetails, ureq _dto.UserRequestPasswordUpdate) error
 	}
 
 	UserRepository interface {
