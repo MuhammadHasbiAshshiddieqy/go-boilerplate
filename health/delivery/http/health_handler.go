@@ -18,6 +18,6 @@ func NewHealthHandler(router fiber.Router) {
 }
 
 func (h *HealthHandler) Check(c *fiber.Ctx) error {
-	c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "good condition"})
-	return nil
+	err := c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "good condition"})
+	return err
 }

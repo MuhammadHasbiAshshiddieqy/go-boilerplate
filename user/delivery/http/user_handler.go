@@ -42,24 +42,24 @@ func (u *UserHandler) Store(c *fiber.Ctx) error {
 		return err
 	}
 
-	res, err := u.UUsecase.Store(c, payload)
+	res, err := u.UUsecase.Store(c.Context(), payload)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "failed", "message": err.Error()})
 	}
 
-	c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "success to create user", "data": res})
-	return nil
+	err = c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "success to create user", "data": res})
+	return err
 }
 
 func (u *UserHandler) GetByID(c *fiber.Ctx) error {
 	id := c.Params("id")
-	res, err := u.UUsecase.GetByID(c, id)
+	res, err := u.UUsecase.GetByID(c.Context(), id)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "failed", "message": err.Error()})
 	}
 
-	c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "success to get user", "data": res})
-	return nil
+	err = c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "success to get user", "data": res})
+	return err
 }
 
 func (u *UserHandler) Fetch(c *fiber.Ctx) error {
@@ -69,13 +69,13 @@ func (u *UserHandler) Fetch(c *fiber.Ctx) error {
 		return err
 	}
 
-	res, err := u.UUsecase.Fetch(c, *pagination)
+	res, err := u.UUsecase.Fetch(c.Context(), *pagination)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "failed", "message": err.Error()})
 	}
 
-	c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "success to get users", "data": res})
-	return nil
+	err = c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "success to get users", "data": res})
+	return err
 }
 
 func (u *UserHandler) Update(c *fiber.Ctx) error {
@@ -84,24 +84,24 @@ func (u *UserHandler) Update(c *fiber.Ctx) error {
 		return err
 	}
 
-	res, err := u.UUsecase.Update(c, payload)
+	res, err := u.UUsecase.Update(c.Context(), payload)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "failed", "message": err.Error()})
 	}
 
-	c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "success to update user", "data": res})
-	return nil
+	err = c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "success to update user", "data": res})
+	return err
 }
 
 func (u *UserHandler) Delete(c *fiber.Ctx) error {
 	id := c.Params("id")
-	err := u.UUsecase.Delete(c, id)
+	err := u.UUsecase.Delete(c.Context(), id)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "failed", "message": err.Error()})
 	}
 
-	c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "success to delete user", "user_id": id})
-	return nil
+	err = c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "success to delete user", "user_id": id})
+	return err
 }
 
 func (u *UserHandler) Login(c *fiber.Ctx) error {
@@ -109,13 +109,13 @@ func (u *UserHandler) Login(c *fiber.Ctx) error {
 	if err := c.BodyParser(&payload); err != nil {
 		return err
 	}
-	res, err := u.UUsecase.Login(c, payload)
+	res, err := u.UUsecase.Login(c.Context(), payload)
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"status": "failed", "message": err.Error()})
 	}
 
-	c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "login success", "data": res})
-	return nil
+	err = c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "login success", "data": res})
+	return err
 }
 
 func (u *UserHandler) Refresh(c *fiber.Ctx) error {
@@ -123,13 +123,13 @@ func (u *UserHandler) Refresh(c *fiber.Ctx) error {
 	if err := c.BodyParser(&payload); err != nil {
 		return err
 	}
-	res, err := u.UUsecase.Refresh(c, payload)
+	res, err := u.UUsecase.Refresh(c.Context(), payload)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "failed", "message": err.Error()})
 	}
 
-	c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "refresh success", "data": res})
-	return nil
+	err = c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "refresh success", "data": res})
+	return err
 }
 
 func (u *UserHandler) Logout(c *fiber.Ctx) error {
@@ -137,13 +137,13 @@ func (u *UserHandler) Logout(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "failed", "message": err.Error()})
 	}
-	err = u.UUsecase.Logout(c, metadata)
+	err = u.UUsecase.Logout(c.Context(), metadata)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "failed", "message": err.Error()})
 	}
 
-	c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "logout success"})
-	return nil
+	err = c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "logout success"})
+	return err
 }
 
 func (u *UserHandler) ResetPassword(c *fiber.Ctx) error {
@@ -157,11 +157,11 @@ func (u *UserHandler) ResetPassword(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "failed", "message": err.Error()})
 	}
 
-	err = u.UUsecase.ResetPassword(c, metadata, payload)
+	err = u.UUsecase.ResetPassword(c.Context(), metadata, payload)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "failed", "message": err.Error()})
 	}
 
-	c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "success to reset password"})
-	return nil
+	err = c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "success to reset password"})
+	return err
 }

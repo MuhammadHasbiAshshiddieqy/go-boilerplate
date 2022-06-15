@@ -69,5 +69,8 @@ func main() {
 		app_port = ":3000"
 	}
 
-	app.Listen(app_port)
+	err := app.Listen(app_port)
+	if err != nil {
+		panic(err)
+	}
 }

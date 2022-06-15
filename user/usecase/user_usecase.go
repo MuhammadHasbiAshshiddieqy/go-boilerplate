@@ -1,12 +1,12 @@
 package usecase
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"os"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/gofiber/fiber/v2"
 
 	_domain "microservice/shared/domain"
 	_dto "microservice/shared/dto"
@@ -25,7 +25,7 @@ func NewUserUsecase(u _domain.UserRepository) _domain.UserUsecase {
 	}
 }
 
-func (u *userUsecase) Store(c *fiber.Ctx, ureq _dto.UserRequestCreate) (_dto.UserResponse, error) {
+func (u *userUsecase) Store(c context.Context, ureq _dto.UserRequestCreate) (_dto.UserResponse, error) {
 	us, err := _mapper.MapUserRequestCreateToUser(ureq)
 	if err != nil {
 		return _dto.UserResponse{}, err
@@ -39,7 +39,7 @@ func (u *userUsecase) Store(c *fiber.Ctx, ureq _dto.UserRequestCreate) (_dto.Use
 	return _mapper.MapUserToUserResponse(res), nil
 }
 
-func (u *userUsecase) GetByID(c *fiber.Ctx, id string) (_dto.UserResponse, error) {
+func (u *userUsecase) GetByID(c context.Context, id string) (_dto.UserResponse, error) {
 	res, err := u.userRepo.GetByID(c, id)
 	if err != nil {
 		return _dto.UserResponse{}, err
@@ -48,7 +48,7 @@ func (u *userUsecase) GetByID(c *fiber.Ctx, id string) (_dto.UserResponse, error
 	return _mapper.MapUserToUserResponse(res), nil
 }
 
-func (u *userUsecase) Fetch(c *fiber.Ctx, pagination _dto.Pagination) (_dto.Pagination, error) {
+func (u *userUsecase) Fetch(c context.Context, pagination _dto.Pagination) (_dto.Pagination, error) {
 	res, err := u.userRepo.Fetch(c, &pagination)
 	if err != nil {
 		return _dto.Pagination{}, err
@@ -61,7 +61,7 @@ func (u *userUsecase) Fetch(c *fiber.Ctx, pagination _dto.Pagination) (_dto.Pagi
 	return pagination, nil
 }
 
-func (u *userUsecase) Update(c *fiber.Ctx, ureq _dto.UserRequestUpdate) (_dto.UserResponse, error) {
+func (u *userUsecase) Update(c context.Context, ureq _dto.UserRequestUpdate) (_dto.UserResponse, error) {
 	us, err := u.userRepo.GetByID(c, ureq.ID)
 	if err != nil {
 		return _dto.UserResponse{}, err
@@ -79,7 +79,7 @@ func (u *userUsecase) Update(c *fiber.Ctx, ureq _dto.UserRequestUpdate) (_dto.Us
 	return _mapper.MapUserToUserResponse(res), nil
 }
 
-func (u *userUsecase) Delete(c *fiber.Ctx, id string) error {
+func (u *userUsecase) Delete(c context.Context, id string) error {
 	err := u.userRepo.Delete(c, id)
 	if err != nil {
 		return err
@@ -88,7 +88,7 @@ func (u *userUsecase) Delete(c *fiber.Ctx, id string) error {
 	return nil
 }
 
-func (u *userUsecase) Login(c *fiber.Ctx, ureq _dto.UserRequestLogin) (_dto.UserResponseToken, error) {
+func (u *userUsecase) Login(c context.Context, ureq _dto.UserRequestLogin) (_dto.UserResponseToken, error) {
 	us, err := u.userRepo.GetByCondition(c, _domain.User{
 		Name: ureq.Name,
 	})
@@ -116,7 +116,7 @@ func (u *userUsecase) Login(c *fiber.Ctx, ureq _dto.UserRequestLogin) (_dto.User
 	}, nil
 }
 
-func (u *userUsecase) Refresh(c *fiber.Ctx, ureq _dto.UserRequestRefresh) (_dto.UserResponseToken, error) {
+func (u *userUsecase) Refresh(c context.Context, ureq _dto.UserRequestRefresh) (_dto.UserResponseToken, error) {
 	//verify the token
 	// os.Setenv("REFRESH_SECRET", "mcmvmkmsdnfsdmfdsjf") //this should be in an env file
 	token, err := jwt.Parse(ureq.RefreshToken, func(token *jwt.Token) (interface{}, error) {
@@ -132,7 +132,7 @@ func (u *userUsecase) Refresh(c *fiber.Ctx, ureq _dto.UserRequestRefresh) (_dto.
 		return _dto.UserResponseToken{}, errors.New("refresh token expired")
 	}
 	//is token valid?
-	if _, ok := token.Claims.(jwt.Claims); !ok && !token.Valid {
+	if !token.Valid {
 		return _dto.UserResponseToken{}, err
 	}
 	//Since token is valid, get the uuid:
@@ -172,7 +172,7 @@ func (u *userUsecase) Refresh(c *fiber.Ctx, ureq _dto.UserRequestRefresh) (_dto.
 	}
 }
 
-func (u *userUsecase) Logout(c *fiber.Ctx, metadata *_dto.AccessDetails) error {
+func (u *userUsecase) Logout(c context.Context, metadata *_dto.AccessDetails) error {
 	delErr := _helper.DeleteTokens(metadata)
 	if delErr != nil {
 		return errors.New("failed to delete token")
@@ -180,7 +180,7 @@ func (u *userUsecase) Logout(c *fiber.Ctx, metadata *_dto.AccessDetails) error {
 	return nil
 }
 
-func (u *userUsecase) ResetPassword(c *fiber.Ctx, metadata *_dto.AccessDetails, ureq _dto.UserRequestPasswordUpdate) error {
+func (u *userUsecase) ResetPassword(c context.Context, metadata *_dto.AccessDetails, ureq _dto.UserRequestPasswordUpdate) error {
 	us, err := u.userRepo.GetByID(c, metadata.UserId)
 	if err != nil {
 		return err
