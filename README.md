@@ -1,15 +1,17 @@
-Golang Boilerplate (Clean-Architecture)
+# Golang Boilerplate (Clean-Architecture)
 
-TODO
+----
 
-[X] Basic Structure
-[X] CRUD User
-[X] Login
-[X] Refresh Token
-[X] Logout
-[X] Lint
-[ ] Fix User Entity (add email, role, etc)
-[ ] BE Communication (HMAC)
-[ ] Unit Test
-[ ] TLS
-[X] Mock (https://github.com/vektra/mockery)
+| Task | Status | Description |  
+|-----------|:-----------:|-----------:|  
+| Basic Structure | DONE | ref : https://github.com/bxcodec/go-clean-arch | 
+| CRUD User | DONE | Fix User Entity (add email, role, etc) | 
+| Login | DONE |  | 
+| Logout | DONE |  | 
+| Lint | DONE | golangci-lint | 
+| Mock | DONE | ref : https://github.com/vektra/mockery |
+| fix readme | DONE | ref : https://docs.microsoft.com/en-us/azure/devops/project/wiki/markdown-guidance?view=azure-devops |
+| SQL Mock |  | ref : https://github.com/DATA-DOG/go-sqlmock |
+| BE Communication (HMAC) |  |  |
+| Unit test |  |  |
+| TLS |  |  | 
