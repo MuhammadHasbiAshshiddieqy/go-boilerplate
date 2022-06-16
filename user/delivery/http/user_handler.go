@@ -8,7 +8,7 @@ import (
 	_helper "microservice/shared/pkg/helper"
 )
 
-// UserHandler represent the httphandler for server health
+// UserHandler represent the httphandler for server user
 type UserHandler struct {
 	UUsecase _domain.UserUsecase
 }

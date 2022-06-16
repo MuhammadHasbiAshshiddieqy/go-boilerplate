@@ -15,6 +15,9 @@ type (
 		Base
 		Name     string `gorm:"column:name;type:varchar(64)"`
 		Password string `gorm:"column:password;type:varchar(64)"`
+		Email    string `gorm:"column:email;type:varchar(64)"`
+		RoleID   string `gorm:"column:role_id;type:varchar(64)"`
+		Role     Role   `gorm:"->;foreignKey:RoleID;references:ID"`
 	}
 
 	UserUsecase interface {

@@ -31,7 +31,10 @@ func Init(DbUser, DbPassword string) error {
 	if err != nil {
 		return errors.New("MySQL Connection Error")
 	}
-	err = db.AutoMigrate(&_domain.User{})
+	err = db.AutoMigrate(
+		&_domain.User{},
+		&_domain.Role{},
+	)
 
 	return err
 }

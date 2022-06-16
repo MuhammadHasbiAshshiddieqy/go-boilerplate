@@ -8,17 +8,10 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
 
+	"microservice/cmd/server/register"
 	_config "microservice/shared/config"
 	_mysql "microservice/shared/pkg/database/mysql"
 	_redis "microservice/shared/pkg/database/redis"
-
-	// HEALTH
-	_healthHttpDelivery "microservice/health/delivery/http"
-
-	// USER
-	_userHttpDelivery "microservice/user/delivery/http"
-	_mysqlUserRepository "microservice/user/repository/mysql"
-	_userUsecase "microservice/user/usecase"
 )
 
 func init() {
@@ -41,9 +34,6 @@ func init() {
 }
 
 func main() {
-	mysqlConn := _mysql.MySQLManager()
-	rdbConn := _redis.RedisManager()
-
 	// Start a new fiber app
 	app := fiber.New(fiber.Config{
 		// Prefork:      true, // Need research
@@ -55,14 +45,7 @@ func main() {
 	app.Use(cors.New()) // For CORS
 
 	v1Grp := app.Group("/v1")
-
-	// Health Group
-	_healthHttpDelivery.NewHealthHandler(v1Grp)
-
-	// User Group
-	ur := _mysqlUserRepository.NewMysqlUserRepository(mysqlConn, rdbConn)
-	uu := _userUsecase.NewUserUsecase(ur)
-	_userHttpDelivery.NewUserHandler(v1Grp, uu)
+	register.InitV1(v1Grp)
 
 	app_port := os.Getenv("PORT")
 	if app_port == "" {
