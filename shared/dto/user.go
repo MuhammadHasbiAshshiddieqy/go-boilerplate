@@ -2,18 +2,21 @@ package dto
 
 type (
 	UserResponse struct {
-		ID   string `json:"id"`
-		Name string `json:"name"`
+		ID     string `json:"id"`
+		Name   string `json:"name"`
+		RoleID string `json:"role_id"`
 	}
 
 	UserRequestCreate struct {
-		Name     string `json:"name"`
+		Name     string `json:"name" validate:"required,min=3,max=64"`
 		Password string `json:"password"`
+		RoleID   string `json:"role_id" validate:"required"`
 	}
 
 	UserRequestUpdate struct {
-		ID   string `json:"id"`
-		Name string `json:"name"`
+		ID     string `json:"id"`
+		Name   string `json:"name"`
+		RoleID string `json:"role_id"`
 	}
 
 	UserRequestPasswordUpdate struct {

@@ -2,6 +2,8 @@ package http
 
 import (
 	"github.com/gofiber/fiber/v2"
+
+	_mapper "microservice/shared/pkg/mapper"
 )
 
 // HealthHandler represent the httphandler for server health
@@ -18,6 +20,6 @@ func NewHealthHandler(router fiber.Router) {
 }
 
 func (h *HealthHandler) Check(c *fiber.Ctx) error {
-	err := c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "good condition"})
+	err := c.Status(fiber.StatusOK).JSON(_mapper.BaseResponse("success", "server in good condition", nil))
 	return err
 }

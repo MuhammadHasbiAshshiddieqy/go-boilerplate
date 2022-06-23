@@ -14,6 +14,7 @@ func MapUserRequestCreateToUser(u _dto.UserRequestCreate) (_domain.User, error) 
 	}
 	return _domain.User{
 		Name:     u.Name,
+		RoleID:   u.RoleID,
 		Password: pwd,
 	}, nil
 }
@@ -21,6 +22,10 @@ func MapUserRequestCreateToUser(u _dto.UserRequestCreate) (_domain.User, error) 
 func MapUserRequestUpdateToUser(u _dto.UserRequestUpdate, us _domain.User) (_domain.User, error) {
 	if u.Name != "" {
 		us.Name = u.Name
+	}
+
+	if u.RoleID != "" {
+		us.RoleID = u.RoleID
 	}
 
 	return us, nil
@@ -38,8 +43,9 @@ func MapUserRequestPasswordUpdateToUser(u _dto.UserRequestPasswordUpdate, us _do
 
 func MapUserToUserResponse(u _domain.User) _dto.UserResponse {
 	return _dto.UserResponse{
-		ID:   u.ID,
-		Name: u.Name,
+		ID:     u.ID,
+		Name:   u.Name,
+		RoleID: u.RoleID,
 	}
 }
 
