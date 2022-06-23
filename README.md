@@ -17,3 +17,4 @@
 | Unit test |  |  |
 | TLS |  |  |
 | Access Control |  | casbin | 
+| Middleware for Authorization | DONE |  | 
