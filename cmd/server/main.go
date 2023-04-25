@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"time"
 
@@ -10,27 +11,61 @@ import (
 
 	"microservice/cmd/server/register"
 	_config "microservice/shared/config"
+	_domain "microservice/shared/domain"
 	_mysql "microservice/shared/pkg/database/mysql"
 	_redis "microservice/shared/pkg/database/redis"
 )
 
 func init() {
+	var err error
+
 	//To load our environmental variables.
-	if err := godotenv.Load(); err != nil {
+	if err = godotenv.Load(); err != nil {
 		panic(err)
 	}
 
-	if err := _config.InitConfig(os.Getenv("ENV")); err != nil {
+	if err = _config.InitConfig(os.Getenv("ENV")); err != nil {
 		panic(err)
 	}
 
-	if err := _mysql.Init(os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD")); err != nil {
+	conf := _config.GetConfig()
+
+	mysqlMaster := _mysql.New(
+		conf.MysqlMicroMaster.Role,
+		conf.MysqlMicroMaster.Port,
+		conf.MysqlMicroMaster.Host,
+		conf.MysqlMicroMaster.DB,
+		os.Getenv("MYSQL_MICRO_MASTER_USERNAME"),
+		os.Getenv("MYSQL_MICRO_MASTER_PASSWORD"),
+		conf.MysqlMicroMaster.Name,
+	)
+
+	if err = mysqlMaster.Init(); err != nil {
 		panic(err)
 	}
 
-	if err := _redis.Init(); err != nil {
+	if err = _mysql.GetConnection(conf.MysqlMicroMaster.Name).AutoMigrate(
+		&_domain.User{},
+		&_domain.Role{},
+	); err != nil {
 		panic(err)
 	}
+
+	redisMaster := _redis.New(
+		conf.RedisMaster.Role,
+		conf.RedisMaster.Port,
+		conf.RedisMaster.DB,
+		conf.RedisMaster.Host,
+		os.Getenv("REDIS_MASTER_PASSWORD"),
+		conf.RedisMaster.Name,
+	)
+
+	if err = redisMaster.Init(); err != nil {
+		panic(err)
+	}
+
+	fmt.Println("MySQL connection : ", _mysql.GetConnectionList())
+	fmt.Println("Redis connection : ", _redis.GetConnectionList())
 }
 
 func main() {

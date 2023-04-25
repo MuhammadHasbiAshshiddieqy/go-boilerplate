@@ -3,33 +3,68 @@ package redis
 import (
 	"errors"
 	"fmt"
-	_config "microservice/shared/config"
 
 	"github.com/go-redis/redis/v8"
 )
 
-var rdb *redis.Client
-var err error
+var (
+	rdb      = make(map[string]*redis.Client)
+	connList []string
+	err      error
+)
+
+type RedisOption struct {
+	ConnName string
+	Username string
+	Password string
+	Host     string
+	Db       int
+	Port     int
+	Role     int
+}
+
+type redisOption interface {
+	Init() error
+}
+
+// New - redis constructor
+func New(role, port, db int, host, pwd, connname string) redisOption {
+	return &RedisOption{
+		ConnName: connname,
+		Password: pwd,
+		Host:     host,
+		Db:       db,
+		Port:     port,
+		Role:     role,
+	}
+}
 
 // Init - redis init
-func Init() error {
-	conf := _config.GetConfig()
-	dsn := fmt.Sprintf("%s:%d", conf.Redis.Host, conf.Redis.Port)
-	rdb = redis.NewClient(&redis.Options{
+func (r *RedisOption) Init() error {
+	dsn := fmt.Sprintf("%s:%d", r.Host, r.Port)
+	rdb[r.ConnName] = redis.NewClient(&redis.Options{
 		Addr:     dsn,
-		Password: "", // no password set
-		DB:       0,  // use default DB
+		Password: r.Password, // no password set
+		DB:       r.Db,       // use default DB
 	})
 
-	_, err = rdb.Ping(rdb.Context()).Result()
+	_, err = rdb[r.ConnName].Ping(rdb[r.ConnName].Context()).Result()
 	if err != nil {
-		return errors.New("Redis Connection Error")
+		errMsg := fmt.Sprintf("Redis ERROR : error to create %s connection", r.ConnName)
+		return errors.New(errMsg)
 	}
+
+	connList = append(connList, r.ConnName)
 
 	return nil
 }
 
-// RedisManager - return db connection
-func RedisManager() *redis.Client {
-	return rdb
+// GetConnection - return db connection
+func GetConnection(connname string) *redis.Client {
+	return rdb[connname]
+}
+
+// GetConnectionList - return mysql connection names
+func GetConnectionList() []string {
+	return connList
 }

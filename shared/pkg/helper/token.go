@@ -55,7 +55,7 @@ func CreateToken(userid string) (*_dto.TokenDetails, error) {
 }
 
 func CreateAuth(userid string, td *_dto.TokenDetails) error {
-	client := _redis.RedisManager()
+	client := _redis.GetConnection(_redis.GetConnectionList()[0])
 	at := time.Unix(td.AtExpires, 0) //converting Unix to UTC(to Time object)
 	rt := time.Unix(td.RtExpires, 0)
 	now := time.Now()
@@ -72,7 +72,7 @@ func CreateAuth(userid string, td *_dto.TokenDetails) error {
 	return nil
 }
 
-//get the token from the request body
+// get the token from the request body
 func ExtractToken(c *fiber.Ctx) string {
 	bearToken := c.Get("Authorization")
 	strArr := strings.Split(bearToken, " ")
@@ -132,7 +132,7 @@ func ExtractTokenMetadata(c *fiber.Ctx) (*_dto.AccessDetails, error) {
 }
 
 func FetchAuth(authD *_dto.AccessDetails) (string, error) {
-	client := _redis.RedisManager()
+	client := _redis.GetConnection(_redis.GetConnectionList()[0])
 	userid, err := client.Get(client.Context(), authD.AccessUuid).Result()
 	if err != nil {
 		return "", err
@@ -145,7 +145,7 @@ func FetchAuth(authD *_dto.AccessDetails) (string, error) {
 }
 
 func DeleteAuth(givenUuid string) (int64, error) {
-	client := _redis.RedisManager()
+	client := _redis.GetConnection(_redis.GetConnectionList()[0])
 	deleted, err := client.Del(client.Context(), givenUuid).Result()
 	if err != nil {
 		return 0, err
@@ -154,7 +154,7 @@ func DeleteAuth(givenUuid string) (int64, error) {
 }
 
 func DeleteTokens(authD *_dto.AccessDetails) error {
-	client := _redis.RedisManager()
+	client := _redis.GetConnection(_redis.GetConnectionList()[0])
 	//get the refresh uuid
 	refreshUuid := fmt.Sprintf("%s++%s", authD.AccessUuid, authD.UserId)
 	//delete access token

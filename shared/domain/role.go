@@ -24,12 +24,16 @@ type (
 		Delete(c context.Context, id string) error
 	}
 
-	RoleRepository interface {
+	RoleMysqlRepository interface {
 		Fetch(c context.Context, pagination *_dto.Pagination) ([]*Role, error)
 		GetByID(c context.Context, id string) (Role, error)
 		Update(c context.Context, r Role) (Role, error)
 		Store(c context.Context, r Role) (Role, error)
 		Delete(c context.Context, id string) error
+	}
+
+	RoleRedisRepository interface {
+		GetByID(c context.Context, id string) (User, error)
 	}
 )
 

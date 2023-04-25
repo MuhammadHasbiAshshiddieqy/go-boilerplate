@@ -6,20 +6,25 @@ import (
 	"github.com/spf13/viper"
 )
 
-type Sql struct {
+type MySql struct {
+	Name string
 	Host string
-	Port int
 	DB   string
+	Port int
+	Role int
 }
 
 type Redis struct {
+	Name string
 	Host string
 	Port int
+	DB   int
+	Role int
 }
 
 type Config struct {
-	Sql   Sql
-	Redis Redis
+	MysqlMicroMaster MySql `mapstructure:"mysql_micro_master"`
+	RedisMaster      Redis `mapstructure:"redis_master"`
 }
 
 var config Config
@@ -28,7 +33,7 @@ func InitConfig(configName string) error {
 	viper.AddConfigPath("./shared/config/secret/")
 	viper.SetConfigName(configName)
 	viper.SetConfigType("json")
-	viper.AutomaticEnv()
+	// viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {

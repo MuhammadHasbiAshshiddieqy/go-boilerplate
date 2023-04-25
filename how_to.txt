@@ -1,0 +1,2 @@
+mock with mockery (ref : https://amitshekhar.me/blog/test-with-testify-and-mockery-in-go) : 
+mockery --dir=shared/domain --output=shared/domain/mocks --outpkg=mocks --all

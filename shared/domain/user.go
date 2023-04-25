@@ -32,13 +32,17 @@ type (
 		ResetPassword(c context.Context, metadata *_dto.AccessDetails, ureq _dto.UserRequestPasswordUpdate) error
 	}
 
-	UserRepository interface {
+	UserMysqlRepository interface {
 		Fetch(c context.Context, pagination *_dto.Pagination) ([]*User, error)
 		GetByID(c context.Context, id string) (User, error)
 		GetByCondition(c context.Context, u User) (User, error)
 		Update(c context.Context, u User) (User, error)
 		Store(c context.Context, u User) (User, error)
 		Delete(c context.Context, id string) error
+	}
+
+	UserRedisRepository interface {
+		GetByID(c context.Context, id string) (User, error)
 	}
 )
 

@@ -6,40 +6,70 @@ import (
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-
-	_config "microservice/shared/config"
-	_domain "microservice/shared/domain"
 )
 
-var db *gorm.DB
-var err error
+var (
+	db       = make(map[string]*gorm.DB)
+	connList []string
+	err      error
+)
+
+type MySqlOption struct {
+	ConnName string
+	Username string
+	Password string
+	Host     string
+	DbName   string
+	Port     int
+	Role     int
+}
+
+type mySqlOption interface {
+	Init() error
+}
+
+// New - mysql constructor
+func New(role, port int, host, db, uname, pwd, connname string) mySqlOption {
+	return &MySqlOption{
+		ConnName: connname,
+		Username: uname,
+		Password: pwd,
+		Host:     host,
+		DbName:   db,
+		Port:     port,
+		Role:     role,
+	}
+}
 
 // Init - mysql init
-func Init(DbUser, DbPassword string) error {
-	conf := _config.GetConfig()
+func (s *MySqlOption) Init() error {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		DbUser,
-		DbPassword,
-		conf.Sql.Host,
-		conf.Sql.Port,
-		conf.Sql.DB,
+		s.Username,
+		s.Password,
+		s.Host,
+		s.Port,
+		s.DbName,
 	)
-	db, err = gorm.Open(mysql.New(mysql.Config{
+	db[s.ConnName], err = gorm.Open(mysql.New(mysql.Config{
 		DSN: dsn, // data source name
 	}), &gorm.Config{})
 
 	if err != nil {
-		return errors.New("MySQL Connection Error")
+		errMsg := fmt.Sprintf("MySQL ERROR : error to create %s connection", s.ConnName)
+		return errors.New(errMsg)
 	}
-	err = db.AutoMigrate(
-		&_domain.User{},
-		&_domain.Role{},
-	)
+
+	connList = append(connList, s.ConnName)
 
 	return err
 }
 
-// DbManager - return db connection
-func MySQLManager() *gorm.DB {
-	return db
+// GetConnection - return mysql connection
+func GetConnection(connname string) *gorm.DB {
+	return db[connname]
+}
+
+// GetConnectionList - return mysql connection names
+func GetConnectionList() []string {
+	return connList
 }

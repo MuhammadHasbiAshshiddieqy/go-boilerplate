@@ -1,6 +1,8 @@
 package register
 
 import (
+	_config "microservice/shared/config"
+
 	"github.com/gofiber/fiber/v2"
 
 	// DB
@@ -12,19 +14,22 @@ import (
 
 	// USER
 	_userHttpDelivery "microservice/user/delivery/http"
-	_mysqlUserRepository "microservice/user/repository/mysql"
+	_userMysqlRepository "microservice/user/repository/mysql"
+	_userRedisRepository "microservice/user/repository/redis"
 	_userUsecase "microservice/user/usecase"
 )
 
 func InitV1(v1Grp fiber.Router) {
-	mysqlConn := _mysql.MySQLManager()
-	rdbConn := _redis.RedisManager()
+	conf := _config.GetConfig()
+	mysqlConn := _mysql.GetConnection(conf.MysqlMicroMaster.Name)
+	rdbConn := _redis.GetConnection(conf.RedisMaster.Name)
 
 	// Health Group
 	_healthHttpDelivery.NewHealthHandler(v1Grp)
 
 	// User Group
-	ur := _mysqlUserRepository.NewMysqlUserRepository(mysqlConn, rdbConn)
-	uu := _userUsecase.NewUserUsecase(ur)
-	_userHttpDelivery.NewUserHandler(v1Grp, uu)
+	umsqlr := _userMysqlRepository.NewUserMysqlRepository(mysqlConn)
+	urdsr := _userRedisRepository.NewUserRedisRepository(rdbConn)
+	uu := _userUsecase.NewUserUsecase(umsqlr, urdsr)
+	_userHttpDelivery.NewUserHttpHandler(v1Grp, uu)
 }
