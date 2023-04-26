@@ -1,2 +1,16 @@
 mock with mockery (ref : https://amitshekhar.me/blog/test-with-testify-and-mockery-in-go) : 
 mockery --dir=shared/domain --output=shared/domain/mocks --outpkg=mocks --all
+
+testing notes :
+delivery => unit-test
+usecase => unit-test
+repository => integration-test
+
+swagger-generate-docs:
+    export PATH=$(go env GOPATH)/bin:$PATH
+	@echo "Generate Swagger for Go Boilerplate"
+	swag init -g cmd/server/main.go -o cmd/server/docs --exclude auth/
+
+
+before run lib use go install, do this : 
+export PATH=$(go env GOPATH)/bin:$PATH

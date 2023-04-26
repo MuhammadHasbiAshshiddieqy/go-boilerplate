@@ -9,6 +9,7 @@ type (
 
 	UserRequestCreate struct {
 		Name     string `json:"name" validate:"required,min=3,max=64"`
+		Email    string `json:"email" validate:"required,min=3,max=64"`
 		Password string `json:"password"`
 		RoleID   string `json:"role_id" validate:"required"`
 	}
@@ -16,6 +17,7 @@ type (
 	UserRequestUpdate struct {
 		ID     string `json:"id"`
 		Name   string `json:"name"`
+		Email  string `json:"email"`
 		RoleID string `json:"role_id"`
 	}
 

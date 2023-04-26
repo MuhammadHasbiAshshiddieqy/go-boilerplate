@@ -29,7 +29,7 @@ func NewUserHttpHandler(router fiber.Router, us _domain.UserUsecase) {
 	handler := &UserHttpHandler{
 		UUsecase: us,
 	}
-	usrGrp := router.Group("/user", baseMiddleware)
+	usrGrp := router.Group("/users", baseMiddleware)
 	{
 		usrGrp.Post("", handler.Store)
 		usrGrp.Get("/:id", handler.GetByID)

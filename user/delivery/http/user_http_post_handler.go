@@ -9,6 +9,15 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// @Summary Store
+// @Description Create New User
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param request body dto.UserRequestCreate true "request body"
+// @Success 200 {object} dto.BaseResponse
+// @Security ApiKeyAuth
+// @Router /users [post]
 func (u *UserHttpHandler) Store(c *fiber.Ctx) error {
 	payload := _dto.UserRequestCreate{}
 	if err := c.BodyParser(&payload); err != nil {

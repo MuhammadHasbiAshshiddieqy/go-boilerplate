@@ -8,6 +8,15 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// @Summary Update
+// @Description Update User Data
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param request body dto.UserRequestUpdate true "request body"
+// @Success 200 {object} dto.BaseResponse
+// @Security ApiKeyAuth
+// @Router /users [put]
 func (u *UserHttpHandler) Update(c *fiber.Ctx) error {
 	payload := _dto.UserRequestUpdate{}
 	if err := c.BodyParser(&payload); err != nil {

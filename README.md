@@ -14,7 +14,14 @@
 | fix readme | DONE | ref : https://docs.microsoft.com/en-us/azure/devops/project/wiki/markdown-guidance?view=azure-devops |
 | SQL Mock |  | ref : https://github.com/DATA-DOG/go-sqlmock |
 | BE Communication (HMAC) |  |  |
-| Unit test |  |  |
+| Unit test | ONGOING |  |
+| API Documentation | ONGOING | ref : https://github.com/swaggo/swag |
+| Integration test | ONGOING |  |
 | TLS |  |  |
 | Access Control |  | casbin | 
 | Middleware for Authorization | DONE |  | 
+
+----
+
+## TODO
+- restructure user auth usecase (problem : hard to mock and create unit test)

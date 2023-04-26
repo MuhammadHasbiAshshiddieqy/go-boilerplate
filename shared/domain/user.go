@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 
+	_helper "microservice/shared/pkg/helper"
+
 	gonanoid "github.com/matoous/go-nanoid/v2"
 	"gorm.io/gorm"
 
@@ -50,6 +52,10 @@ func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 	u.ID, err = gonanoid.New()
 	if err != nil {
 		err = errors.New("failed to generate nano ID")
+	}
+	u.Password, err = _helper.HashPassword(u.Password)
+	if err != nil {
+		err = errors.New("failed to hash password")
 	}
 
 	return

@@ -8,19 +8,20 @@ import (
 )
 
 func MapUserRequestCreateToUser(u _dto.UserRequestCreate) (_domain.User, error) {
-	pwd, err := _helper.HashPassword(u.Password)
-	if err != nil {
-		return _domain.User{}, err
-	}
 	return _domain.User{
 		Name:     u.Name,
 		RoleID:   u.RoleID,
-		Password: pwd,
+		Email:    u.Email,
+		Password: u.Password,
 	}, nil
 }
 
 func MapUserRequestUpdateToUser(u _dto.UserRequestUpdate, us _domain.User) (_domain.User, error) {
 	if u.Name != "" {
+		us.Name = u.Name
+	}
+
+	if u.Email != "" {
 		us.Name = u.Name
 	}
 

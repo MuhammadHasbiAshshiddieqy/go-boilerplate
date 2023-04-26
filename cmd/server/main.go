@@ -5,8 +5,11 @@ import (
 	"os"
 	"time"
 
+	_ "microservice/cmd/server/docs"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/swagger"
 	"github.com/joho/godotenv"
 
 	"microservice/cmd/server/register"
@@ -80,6 +83,7 @@ func main() {
 	app.Use(cors.New()) // For CORS
 
 	v1Grp := app.Group("/v1")
+	v1Grp.Get("/swagger/*", swagger.HandlerDefault) // default
 	register.InitV1(v1Grp)
 
 	app_port := os.Getenv("PORT")
